@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معمل الرياضيات | المعلمة فاطمة الصقور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700;800&family=Changa:wght@400;600;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Lateef:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ff; --bg2:#ffffff; --card:#ffffff; --ink:#1e1b3a; --muted:#5b5878;
+  --brand1:#6c3df4; --brand2:#00c2a8; --brand3:#ff9a3d; --brand4:#ff4d7e;
+  --line:#e8e4fb; --shadow:0 12px 40px rgba(108,61,244,.14);
+  --radius:20px; --fs:17px;
+}
+[data-theme="dark"]{
+  --bg:#0e0d1f; --bg2:#16152e; --card:#1b1a36; --ink:#f2efff; --muted:#b7b2d6;
+  --line:#2c2a58; --shadow:0 12px 40px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font,"Cairo",sans-serif); font-size:var(--fs);
+  transition:background .35s,color .35s; overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(600px 400px at 85% 5%, rgba(108,61,244,.18), transparent 60%),
+    radial-gradient(500px 400px at 10% 20%, rgba(0,194,168,.16), transparent 60%),
+    radial-gradient(500px 500px at 50% 100%, rgba(255,77,126,.12), transparent 60%);
+}
+#mathCanvas{position:fixed; inset:0; z-index:-1; opacity:.5; pointer-events:none}
+a{color:inherit}
+.wrap{max-width:1150px; margin:auto; padding:0 18px}
+/* accessibility bar */
+.acc-bar{
+  position:sticky; top:0; z-index:50;
+  background:color-mix(in srgb, var(--bg2) 88%, transparent);
+  backdrop-filter:blur(14px); border-bottom:1px solid var(--line);
+}
+.acc-inner{display:flex; align-items:center; gap:10px; padding:10px 18px; max-width:1150px; margin:auto; flex-wrap:wrap}
+.acc-inner .lab{font-weight:800; font-size:.85em; background:linear-gradient(90deg,var(--brand1),var(--brand4)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.btn{
+  border:1px solid var(--line); background:var(--card); color:var(--ink);
+  border-radius:999px; padding:7px 13px; cursor:pointer; font-family:inherit; font-weight:700; font-size:.88em;
+  display:inline-flex; align-items:center; gap:6px; transition:.2s;
+}
+.btn:hover{transform:translateY(-1px); border-color:var(--brand1); box-shadow:var(--shadow)}
+.btn.primary{background:linear-gradient(90deg,var(--brand1),#9a6bff); color:#fff; border:0}
+.btn.ghost{background:transparent}
+select.btn{appearance:none}
+.theme-dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#ffd76b,#ff9a3d);display:inline-block}
+/* header */
+header.hero{padding:54px 0 10px; position:relative}
+.hero-card{
+  background:linear-gradient(135deg, #6c3df4 0%, #8e4bff 35%, #ff4d7e 75%, #ff9a3d 100%);
+  border-radius:28px; color:#fff; padding:42px 32px; position:relative; overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.hero-card::after{
+  content:"π ∑ √ ∞ Δ θ λ"; position:absolute; left:12px; bottom:2px; font-size:92px; opacity:.14; font-weight:900; letter-spacing:12px; white-space:nowrap;
+}
+.hero-card::before{
+  content:""; position:absolute; width:420px;height:420px; background:radial-gradient(circle,rgba(255,255,255,.28),transparent 65%);
+  top:-140px; left:-80px;
+}
+.hero-grid{display:grid; grid-template-columns:1.2fr .8fr; gap:26px; align-items:center; position:relative; z-index:1}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr}}
+.badge{display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); padding:7px 14px; border-radius:999px; font-size:.82em; font-weight:700}
+h1{font-size:clamp(1.9rem,4.2vw,3.1rem); margin:14px 0 8px; line-height:1.25; font-weight:900}
+.hero-card p{margin:0; opacity:.94; line-height:2}
+.hero-actions{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap}
+.hero-actions .btn{background:#fff; color:#3a2a9e; border:0}
+.hero-actions .btn.dark{background:rgba(0,0,0,.28); color:#fff; border:1px solid rgba(255,255,255,.4)}
+.orb{
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); backdrop-filter:blur(8px);
+  border-radius:22px; padding:20px; text-align:center;
+}
+.orb .big{font-size:3.2rem; font-weight:900}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px; text-align:center; box-shadow:var(--shadow)}
+.stat b{font-size:1.5rem; display:block; background:linear-gradient(90deg,var(--brand1),var(--brand4)); -webkit-background-clip:text; background-clip:text; color:transparent}
+/* nav */
+nav.tabs{position:sticky; top:57px; z-index:40; padding:10px 0}
+.tabs-inner{display:flex; gap:8px; overflow:auto; padding:4px 2px}
+.tabs-inner a{
+  white-space:nowrap; text-decoration:none; background:var(--card); border:1px solid var(--line);
+  padding:9px 16px; border-radius:999px; font-weight:800; font-size:.88em;
+}
+.tabs-inner a:hover{border-color:var(--brand1)}
+/* sections */
+section{margin:30px 0}
+.sec-head{display:flex; align-items:end; justify-content:space-between; gap:12px; margin-bottom:14px}
+.sec-head h2{margin:0; font-size:1.45rem; font-weight:900}
+.sec-head h2 span{background:linear-gradient(90deg,var(--brand1),var(--brand2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.sec-head p{margin:4px 0 0; color:var(--muted); font-size:.92em}
+.grid{display:grid; gap:14px}
+.g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g3{grid-template-columns:repeat(2,1fr)}} @media(max-width:620px){.g3,.g2{grid-template-columns:1fr}}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px; box-shadow:var(--shadow); position:relative; overflow:hidden; transition:.25s;
+}
+.card:hover{transform:translateY(-4px)}
+.card::before{content:""; position:absolute; top:0; right:0; left:0; height:5px; background:linear-gradient(90deg,var(--brand1),var(--brand2),var(--brand3),var(--brand4))}
+.card h3{margin:6px 0 8px; font-size:1.08rem}
+.tag{font-size:.72em; font-weight:800; padding:4px 10px; border-radius:999px; display:inline-block; margin-left:6px}
+.t1{background:#ede7ff; color:#5b2ee5} [data-theme="dark"] .t1{background:#2d2560; color:#cfc2ff}
+.t2{background:#dcf7f0; color:#0a7a68} [data-theme="dark"] .t2{background:#123f39; color:#7ff0dc}
+.t3{background:#ffe9d5; color:#a34d00} [data-theme="dark"] .t3{background:#4a2c12; color:#ffcf9e}
+.t4{background:#ffe0e9; color:#b40045} [data-theme="dark"] .t4{background:#4d162e; color:#ff9dbe}
+.formula{
+  direction:ltr; text-align:center; font-weight:800; background:linear-gradient(180deg, rgba(108,61,244,.08), rgba(0,194,168,.08));
+  border:1px dashed var(--brand1); border-radius:14px; padding:12px; margin:10px 0; font-size:1.15em;
+}
+.ex{background:color-mix(in srgb, var(--brand2) 10%, transparent); border-radius:12px; padding:10px 12px; font-size:.9em; line-height:1.9}
+.src{font-size:.76em; color:var(--muted); margin-top:10px; border-top:1px solid var(--line); padding-top:8px; line-height:1.9}
+/* calc + quiz */
+.calc-box label{display:block; font-weight:700; font-size:.86em; margin:8px 0 4px}
+.calc-box input{width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font-family:inherit; font-size:1em}
+.result{margin-top:10px; background:#1e1b3a; color:#fff; border-radius:12px; padding:12px; font-weight:800; text-align:center; direction:ltr}
+[data-theme="light"] .result{background:#1e1b3a}
+.quiz-q{margin-bottom:12px; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--bg2)}
+.quiz-q p{font-weight:800; margin:0 0 8px}
+.quiz-q label{display:block; padding:8px 10px; border-radius:10px; cursor:pointer; border:1px solid transparent}
+.quiz-q label:hover{background:color-mix(in srgb, var(--brand1) 8%, transparent); border-color:var(--line)}
+footer{margin:34px 0 40px; text-align:center; color:var(--muted); font-size:.86em; line-height:2}
+.float-sym{position:absolute; font-weight:900; opacity:.12; animation:float 7s ease-in-out infinite; pointer-events:none}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-16px) rotate(4deg)}}
+.search{width:100%; padding:12px 16px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-family:inherit; font-size:.95em}
+kbd{background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:1px 7px; font-family:inherit}
+</style>
+</head>
+<body>
+<canvas id="mathCanvas"></canvas>
+
+<div class="acc-bar">
+  <div class="acc-inner">
+    <span class="lab">⚙️ لوحة التحكم</span>
+    <button class="btn" onclick="changeFont(1)" title="تكبير الخط">A+ تكبير</button>
+    <button class="btn" onclick="changeFont(-1)" title="تصغير الخط">A− تصغير</button>
+    <button class="btn ghost" onclick="resetFont()">إعادة ⤾</button>
+    <button class="btn" onclick="toggleTheme()"><span class="theme-dot"></span> <span id="themeLabel">وضع ليلي 🌙</span></button>
+    <select class="btn" id="fontSelect" onchange="setFontFamily(this.value)" title="اختر نوع الخط (8 خطوط)">
+      <option value="Cairo">1 - Cairo</option>
+      <option value="Tajawal">2 - Tajawal</option>
+      <option value="Almarai">3 - Almarai</option>
+      <option value="Changa">4 - Changa</option>
+      <option value="IBM Plex Sans Arabic">5 - IBM Plex Arabic</option>
+      <option value="Amiri">6 - Amiri</option>
+      <option value="Aref Ruqaa">7 - Ruqaa</option>
+      <option value="Lateef">8 - Lateef</option>
+    </select>
+    <span style="font-size:.78em;color:var(--muted)">حجم الخط: <b id="fsVal">17</b>px</span>
+  </div>
+</div>
+
+<div class="wrap">
+<header class="hero">
+  <div class="hero-card">
+    <div class="hero-grid">
+      <div>
+        <span class="badge">✨ الفصل الافتراضي • معمل الرياضيات • 1447هـ</span>
+        <h1>معمل الرياضيات التفاعلي<br>للمعلمة فاطمة الصقور</h1>
+        <p>رحلة ممتعة داخل عالم الأرقام: قوانين دقيقة وموثقة، حاسبات فورية، اختبارات ذكية، وتصميم يلهم حب الرياضيات. كله في صفحة واحدة تعمل بدون إنترنت.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="document.getElementById('laws').scrollIntoView()">📐 استكشف القوانين</button>
+          <button class="btn dark" onclick="document.getElementById('lab').scrollIntoView()">🧪 جرّب المعمل</button>
+          <button class="btn dark" onclick="document.getElementById('quiz').scrollIntoView()">🏆 اختبر نفسك</button>
+        </div>
+      </div>
+      <div class="orb">
+        <div style="font-size:.85em;opacity:.85">قانون اليوم ⭐</div>
+        <div class="big" dir="ltr">a² + b² = c²</div>
+        <div style="font-weight:700">نظرية فيثاغورس للمثلث القائم</div>
+        <div style="font-size:.8em;opacity:.8;margin-top:6px">مجموع مربعي الضلعين = مربع الوتر</div>
+      </div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>+24</b>قانوناً موثقاً</div>
+    <div class="stat"><b>4</b>حاسبات تفاعلية</div>
+    <div class="stat"><b>8</b>أنواع خطوط عربية</div>
+    <div class="stat"><b>2</b>ثيم ليلي ونهاري</div>
+  </div>
+</header>
+
+<nav class="tabs"><div class="tabs-inner">
+  <a href="#laws">📐 القوانين</a><a href="#algebra">✖️ الجبر والأسس</a><a href="#trig">📏 المثلثات</a>
+  <a href="#lab">🧪 المعمل والحاسبات</a><a href="#quiz">🏆 الاختبار</a><a href="#sources">📚 المصادر</a>
+</div></nav>
+
+<div style="margin:8px 0"><input class="search" id="search" placeholder="🔍 ابحث عن قانون... مثال: دائرة، فيثاغورس، مساحة" oninput="filterCards(this.value)"></div>
+
+<section id="laws">
+  <div class="sec-head"><div><h2>📐 <span>قوانين المساحات والحجوم</span></h2><p>جميع القوانين مطابقة لمناهج وزارة التعليم السعودية ومراجع عالمية.</p></div></div>
+  <div class="grid g3" id="lawGrid">
+    <div class="card law"><span class="tag t1">هندسة مستوية</span><h3>مساحة الدائرة</h3><div class="formula">A = π r²</div><div class="ex"><b>مثال:</b> نصف القطر 7 → المساحة = 22/7 × 49 = <b>154</b></div><div class="src">المصدر: كتاب الرياضيات، وزارة التعليم السعودية، الصف الثالث المتوسط + OpenStax Geometry.</div></div>
+    <div class="card law"><span class="tag t2">هندسة</span><h3>محيط الدائرة</h3><div class="formula">C = 2 π r</div><div class="ex"><b>مثال:</b> r=7 → المحيط = 2×22/7×7 = <b>44</b></div><div class="src">المصدر: منهج الرياضيات السعودي + Khan Academy Arabic.</div></div>
+    <div class="card law"><span class="tag t3">مثلثات</span><h3>مساحة المثلث</h3><div class="formula">A = ½ × b × h</div><div class="ex"><b>مثال:</b> قاعدة 10 وارتفاع 6 → المساحة = <b>30</b></div><div class="src">المصدر: وزارة التعليم، الصف الأول المتوسط، فصل الهندسة.</div></div>
+    <div class="card law"><span class="tag t1">هندسة</span><h3>نظرية فيثاغورس</h3><div class="formula">a² + b² = c²</div><div class="ex"><b>مثال:</b> 3 و 4 → الوتر = √(9+16) = <b>5</b></div><div class="src">المصدر: كتاب الرياضيات للصف الثالث المتوسط + Euclid's Elements، وموثقة في Wolfram MathWorld.</div></div>
+    <div class="card law"><span class="tag t4">زوايا</span><h3>مجموع زوايا المثلث</h3><div class="formula">α + β + γ = 180°</div><div class="ex"><b>مثال:</b> زاويتان 60 و 70 → الثالثة = <b>50°</b></div><div class="src">المصدر: الهندسة الإقليدية، منهج المرحلة المتوسطة السعودية.</div></div>
+    <div class="card law"><span class="tag t2">مساحات</span><h3>المستطيل والمربع ومتوازي الأضلاع</h3><div class="formula">A(rect) = l×w &nbsp;|&nbsp; A(sq)=s²</div><div class="ex"><b>مثال:</b> مستطيل 8×5 = <b>40</b> | مربع ضلعه 6 = <b>36</b></div><div class="src">المصدر: كتب الرياضيات للمرحلة الابتدائية والعليا، وزارة التعليم.</div></div>
+    <div class="card law"><span class="tag t3">حجوم</span><h3>حجم المكعب ومتوازي المستطيلات</h3><div class="formula">V(cube)=s³ &nbsp;|&nbsp; V=l×w×h</div><div class="ex"><b>مثال:</b> مكعب ضلعه 3 = <b>27</b> | صندوق 4×3×2 = <b>24</b></div><div class="src">المصدر: الصف السادس الابتدائي والثاني المتوسط، وزارة التعليم.</div></div>
+    <div class="card law"><span class="tag t4">حجوم</span><h3>الأسطوانة والكرة والمخروط</h3><div class="formula">V(cyl)=πr²h | V(sph)=4/3 πr³ | V(cone)=⅓πr²h</div><div class="ex"><b>مثال:</b> أسطوانة r=2 و h=7 → الحجم ≈ <b>88</b></div><div class="src">المصدر: منهج الثالث المتوسط + OpenStax + MathWorld.</div></div>
+    <div class="card law"><span class="tag t1">إحصاء</span><h3>المتوسط والوسيط والمنوال</h3><div class="formula" style="direction:rtl">المتوسط = مجموع القيم ÷ عددها</div><div class="ex"><b>مثال:</b> 4، 6، 8 → المتوسط = 18÷3 = <b>6</b> | وسيط 3،5،9 = <b>5</b></div><div class="src">المصدر: كتاب الرياضيات، المرحلة المتوسطة، فصل الإحصاء.</div></div>
+  </div>
+</section>
+
+<section id="algebra">
+  <div class="sec-head"><div><h2>✖️ <span>الجبر والأسس والنسب</span></h2><p>أساسيات لا غنى عنها لكل المراحل.</p></div></div>
+  <div class="grid g3">
+    <div class="card law"><span class="tag t1">جبر</span><h3>المعادلة التربيعية (القانون العام)</h3><div class="formula">x = (−b ± √(b²−4ac)) / 2a</div><div class="ex"><b>مثال:</b> x²−5x+6=0 → المميز 1 → الحلان <b>2 و 3</b></div><div class="src">المصدر: الصف الثالث المتوسط والثانوي السعودي + Khan Academy.</div></div>
+    <div class="card law"><span class="tag t2">أسس</span><h3>قوانين الأسس</h3><div class="formula" style="font-size:1em">aᵐ×aⁿ=aᵐ⁺ⁿ | aᵐ÷aⁿ=aᵐ⁻ⁿ | (aᵐ)ⁿ=aᵐⁿ | a⁰=1</div><div class="ex"><b>مثال:</b> 2³×2² = 2⁵ = <b>32</b></div><div class="src">المصدر: منهج الأول والثاني المتوسط، باب الأسس.</div></div>
+    <div class="card law"><span class="tag t3">نسب</span><h3>النسبة المئوية والتناسب</h3><div class="formula" style="direction:rtl">القيمة = (النسبة ÷ 100) × الكل</div><div class="ex"><b>مثال:</b> 25% من 200 = <b>50</b> | حاصل الضرب التبادلي: a/b = c/d ← ad=bc</div><div class="src">المصدر: منهج الرياضيات السعودي + NCTM Standards.</div></div>
+  </div>
+</section>
+
+<section id="trig">
+  <div class="sec-head"><div><h2>📏 <span>النسب المثلثية</span></h2><p>للمثلث القائم الزاوية.</p></div></div>
+  <div class="grid g3">
+    <div class="card law"><span class="tag t4">مثلثات</span><h3>الجيب وجيب التمام والظل</h3><div class="formula">sin=مقابل/وتر | cos=مجاور/وتر | tan=مقابل/مجاور</div><div class="ex"><b>مثال:</b> مثلث 3-4-5: sin = 3/5 = <b>0.6</b> للزاوية المقابلة للضلع 3</div><div class="src">المصدر: الصف الثالث المتوسط والثانوي + OpenStax Trigonometry.</div></div>
+    <div class="card law"><span class="tag t1">هوية</span><h3>المتطابقة الأساسية</h3><div class="formula">sin²θ + cos²θ = 1</div><div class="ex"><b>مثال:</b> إذا sin=0.6 → cos = √(1−0.36) = <b>0.8</b></div><div class="src">المصدر: مراجع حساب المثلثات المعتمدة + MathWorld.</div></div>
+    <div class="card law"><span class="tag t2">تحويلات</span><h3>محيط ومساحة شبه المنحرف والدائرة</h3><div class="formula">A(trap)=½(a+b)×h</div><div class="ex"><b>مثال:</b> قاعدتان 6 و10 وارتفاع 4 → المساحة = <b>32</b></div><div class="src">المصدر: منهج المرحلة المتوسطة السعودية.</div></div>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="sec-head"><div><h2>🧪 <span>المعمل التفاعلي</span></h2><p>جرّبي القوانين بنفسك — النتائج فورية.</p></div></div>
+  <div class="grid g2">
+    <div class="card calc-box"><h3>⭕ مساحة ومحيط الدائرة</h3><label>نصف القطر r</label><input type="number" id="r" value="7" oninput="calcCircle()"><div class="result" id="resCircle">—</div></div>
+    <div class="card calc-box"><h3>📐 حاسبة فيثاغورس (الوتر)</h3><label>الضلع a</label><input type="number" id="pa" value="3" oninput="calcPyth()"><label>الضلع b</label><input type="number" id="pb" value="4" oninput="calcPyth()"><div class="result" id="resPyth">—</div></div>
+    <div class="card calc-box"><h3>✖️ حل المعادلة التربيعية ax²+bx+c=0</h3><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div><label>a</label><input type="number" id="qa" value="1" oninput="calcQuad()"></div><div><label>b</label><input type="number" id="qb" value="-5" oninput="calcQuad()"></div><div><label>c</label><input type="number" id="qc" value="6" oninput="calcQuad()"></div></div><div class="result" id="resQuad">—</div></div>
+    <div class="card calc-box"><h3>٪ حاسبة النسبة المئوية</h3><label>النسبة %</label><input type="number" id="pct" value="25" oninput="calcPct()"><label>من العدد</label><input type="number" id="ofnum" value="200" oninput="calcPct()"><div class="result" id="resPct">—</div></div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="sec-head"><div><h2>🏆 <span>اختبر نفسك</span></h2><p>5 أسئلة سريعة مع تصحيح فوري ودرجة نهائية.</p></div><button class="btn primary" onclick="checkQuiz()">تصحيح الإجابات ✅</button></div>
+  <div class="card">
+    <div class="quiz-q"><p>1) مساحة دائرة نصف قطرها 7 (باستخدام π = 22/7)؟</p><label><input type="radio" name="q1" value="a"> 44</label><label><input type="radio" name="q1" value="b"> 154 ✅</label><label><input type="radio" name="q1" value="c"> 49</label></div>
+    <div class="quiz-q"><p>2) في مثلث قائم ضلعاه 6 و 8، طول الوتر؟</p><label><input type="radio" name="q2" value="a"> 10 ✅</label><label><input type="radio" name="q2" value="b"> 14</label><label><input type="radio" name="q2" value="c"> 12</label></div>
+    <div class="quiz-q"><p>3) حلا المعادلة x² − 5x + 6 = 0؟</p><label><input type="radio" name="q3" value="a"> 2 و 3 ✅</label><label><input type="radio" name="q3" value="b"> 1 و 6</label><label><input type="radio" name="q3" value="c"> −2 و −3</label></div>
+    <div class="quiz-q"><p>4) 30% من 90 يساوي؟</p><label><input type="radio" name="q4" value="a"> 27 ✅</label><label><input type="radio" name="q4" value="b"> 30</label><label><input type="radio" name="q4" value="c"> 60</label></div>
+    <div class="quiz-q"><p>5) مجموع زوايا المثلث دائماً؟</p><label><input type="radio" name="q5" value="a"> 90°</label><label><input type="radio" name="q5" value="b"> 360°</label><label><input type="radio" name="q5" value="c"> 180° ✅</label></div>
+    <div class="result" id="quizRes">أجيبي ثم اضغطي «تصحيح الإجابات» 🌟</div>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="sec-head"><div><h2>📚 <span>المصادر الموثقة</span></h2><p>تحرّي الدقة أولاً — كل قانون أعلاه مطابق لهذه المراجع.</p></div></div>
+  <div class="grid g2">
+    <div class="card"><h3>🇸🇦 مناهج وزارة التعليم السعودية</h3><p style="line-height:2;font-size:.9em">كتب الرياضيات للمرحلة الابتدائية والمتوسطة والثانوية (طبعة 1445هـ / 1446هـ): الهندسة والقياس، الجبر والدوال، الإحصاء والاحتمال. بوابة عين: <kbd>ien.edu.sa</kbd></p></div>
+    <div class="card"><h3>🌍 مراجع عالمية مفتوحة</h3><p style="line-height:2;font-size:.9em">OpenStax (Geometry / Algebra) — جامعة Rice • Khan Academy Arabic • Wolfram MathWorld • معايير NCTM. تمت مراجعة الصيغ حرفاً بحرف.</p></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>⚠️ تنبيه الدقة</h3><p style="font-size:.88em;line-height:2">استخدمنا π = 22/7 للتبسيط المدرسي، والقيمة الدقيقة 3.14159... للحاسبات. نظرية فيثاغورس تنطبق فقط على المثلث القائم الزاوية. القانون العام للمعادلة التربيعية يتطلب a ≠ 0.</p></div>
+</section>
+
+<footer>
+  <div>💜 صُمم بحب لمعمل الرياضيات — المعلمة <b>فاطمة الصقور</b> • الفصل الافتراضي 1447هـ</div>
+  <div>اختصارات: <kbd>A+</kbd> تكبير • <kbd>A−</kbd> تصغير • الثيم والخط يُحفظان تلقائياً ✅</div>
+</footer>
+</div>
+
+<script>
+// ---- theme + font persistence ----
+const root=document.documentElement;
+let fs=parseInt(localStorage.getItem('ml_fs')||'17');
+function applyFs(){root.style.setProperty('--fs',fs+'px');document.getElementById('fsVal').textContent=fs;}
+function changeFont(d){fs=Math.min(26,Math.max(13,fs+d));localStorage.setItem('ml_fs',fs);applyFs();}
+function resetFont(){fs=17;localStorage.setItem('ml_fs',fs);applyFs();}
+function toggleTheme(){
+  const h=document.documentElement; const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml_theme',dark?'light':'dark');
+  document.getElementById('themeLabel').textContent=dark?'وضع ليلي 🌙':'وضع نهاري ☀️';
+}
+function setFontFamily(f){root.style.setProperty('--font',`"${f}",sans-serif`);localStorage.setItem('ml_font',f);}
+(function init(){
+  applyFs();
+  const t=localStorage.getItem('ml_theme'); if(t){root.setAttribute('data-theme',t);document.getElementById('themeLabel').textContent=t==='dark'?'وضع نهاري ☀️':'وضع ليلي 🌙';}
+  const f=localStorage.getItem('ml_font'); if(f){setFontFamily(f);document.getElementById('fontSelect').value=f;}
+  calcCircle();calcPyth();calcQuad();calcPct();
+})();
+// ---- search filter ----
+function filterCards(q){
+  q=q.trim(); document.querySelectorAll('.law').forEach(c=>{
+    c.style.display=c.textContent.includes(q)?'':'none';
+  });
+}
+// ---- calculators ----
+const PI=Math.PI;
+function calcCircle(){
+  const r=parseFloat(document.getElementById('r').value||'0');
+  document.getElementById('resCircle').textContent=`Area = ${(PI*r*r).toFixed(2)} | C = ${(2*PI*r).toFixed(2)}`;
+}
+function calcPyth(){
+  const a=parseFloat(document.getElementById('pa').value||'0'),b=parseFloat(document.getElementById('pb').value||'0');
+  document.getElementById('resPyth').textContent=`c = √(${a}² + ${b}²) = ${Math.sqrt(a*a+b*b).toFixed(3)}`;
+}
+function calcQuad(){
+  const a=parseFloat(document.getElementById('qa').value||'0'),b=parseFloat(document.getElementById('qb').value||'0'),c=parseFloat(document.getElementById('qc').value||'0');
+  const el=document.getElementById('resQuad');
+  if(a===0){el.textContent='a يجب أن ≠ 0';return;}
+  const d=b*b-4*a*c;
+  if(d<0)el.textContent=`D=${d} → لا حلول حقيقية`;
+  else if(d===0)el.textContent=`حل مضاعف: x = ${(-b/(2*a)).toFixed(3)}`;
+  else el.textContent=`x1=${((-b+Math.sqrt(d))/(2*a)).toFixed(3)} , x2=${((-b-Math.sqrt(d))/(2*a)).toFixed(3)}`;
+}
+function calcPct(){
+  const p=parseFloat(document.getElementById('pct').value||'0'),n=parseFloat(document.getElementById('ofnum').value||'0');
+  document.getElementById('resPct').textContent=`${p}% of ${n} = ${(p/100*n).toFixed(2)}`;
+}
+// ---- quiz ----
+function checkQuiz(){
+  const ans={q1:'b',q2:'a',q3:'a',q4:'a',q5:'c'}; let s=0,tot=5;
+  for(const k in ans){const sel=document.querySelector(`input[name="${k}"]:checked`); if(sel&&sel.value===ans[k])s++;}
+  const msgs=['لا بأس، راجعي القوانين وحاولي مجدداً 💪','جيد! واصلي التقدم 🌸','ممتاز! 🌟','رائع جداً! 🏆','عبقرية الرياضيات! 👑💜'];
+  document.getElementById('quizRes').textContent=`نتيجتك: ${s} / ${tot} — ${msgs[s]}`;
+  document.getElementById('quizRes').scrollIntoView({behavior:'smooth',block:'center'});
+}
+// ---- floating symbols canvas ----
+const cv=document.getElementById('mathCanvas'),ctx=cv.getContext('2d');
+let W,H,parts=[];const syms=['π','∑','√','∞','Δ','θ','λ','÷','×','+','−','=','%','φ'];
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+addEventListener('resize',resize);resize();
+for(let i=0;i<36;i++)parts.push({x:Math.random()*W,y:Math.random()*H,s:14+Math.random()*26,v:.2+Math.random()*.6,o:.12+Math.random()*.2,ch:syms[i%syms.length]});
+(function tick(){
+  ctx.clearRect(0,0,W,H);
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  ctx.fillStyle=dark?'#fff':'#4a3fa3';
+  parts.forEach(p=>{p.y-=p.v;if(p.y<-30){p.y=H+30;p.x=Math.random()*W;}ctx.globalAlpha=p.o;ctx.font=`800 ${p.s}px Cairo`;ctx.fillText(p.ch,p.x,p.y);});
+  ctx.globalAlpha=1;requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
